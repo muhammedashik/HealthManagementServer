@@ -73,5 +73,55 @@ registrationmodel.getUserData = async(params, callback)=>{
         res.send(err.message);
     }
 }
+registrationmodel.saveDataPatient = async (data,callback)=>{
+    try{
+        console.log('patient data', data);
+        const ssqlPool = await pool;
+    const result = await ssqlPool.request()
+    .input('patientName', mssql.VarChar(200), data.Patient_name)
+    .input('mobileNo', mssql.Numeric, data.mobile_No)
+    .input('appointmentDate', mssql.VarChar(200), data.appointment_data)
+    .input('patientAddress', mssql.VarChar(200), data.address)
+    .input('user_id', mssql.Numeric, data.user_id)
+    .execute('sp_create_patient');
+    callback(null, {
+        message: result,
+      })
+    }catch(err){
+        console.log('sql error', err.message);
+        res.send(err.message);
+    }
+}
+registrationmodel.getPatientDetails = async(params, callback)=>{
+    try{
+        console.log('param',params)
+        const mssqlPool = await pool;
+        const result = await mssqlPool.request().
+        query(`select * from patient_list where user_id ='${+ params.id}' and delete_bit = 0  `)
+        callback(null,{
+            message: result.recordsets
+        })
+    }
+    catch(err){
+        console.log('sql error', err.message);
+        res.send(err.message);
+    }
+}
 
+registrationmodel.getTodayAppoinmentList = async(params, callback)=>{
+    try{
+        console.log('param',params)
+        const mssqlPool = await pool;
+        const result = await mssqlPool.request().
+        query(`select * from patient_list
+        where cast(appointmentDate as Date) = cast(getdate() as Date) and  user_id ='${+ params.id}'`)
+        callback(null,{
+            message: result.recordsets
+        })
+    }
+    catch(err){
+        console.log('sql error', err.message);
+        res.send(err.message);
+    }
+}
 module.exports = registrationmodel

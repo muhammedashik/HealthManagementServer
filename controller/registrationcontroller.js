@@ -29,6 +29,34 @@ const appRouter = (app) => {
         res.send(result);
       })
     });
+
+    app.post('/api/saveDataPatient', (req, res) => {
+      registrationmodel.saveDataPatient(req.body, (error, result) => {
+        if (error) {
+          return res.status(400).send(error);
+        }
+        res.send(result);
+      });
+    });
+    app.get('/api/getPatientDetails', (req,res)=>{
+      console.log('req.body',req.query)
+      registrationmodel.getPatientDetails(req.query,(error,result)=>{
+        if(error){
+          return res.status(400).send(error);
+        }
+        res.send(result);
+      })
+    });
+    
+    app.get('/api/getTodayAppoinmentList', (req,res)=>{
+      console.log('req.body',req.query)
+      registrationmodel.getTodayAppoinmentList(req.query,(error,result)=>{
+        if(error){
+          return res.status(400).send(error);
+        }
+        res.send(result);
+      })
+    });
 }
 
 module.exports =appRouter
